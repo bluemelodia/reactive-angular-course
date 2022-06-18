@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { finalize, map } from 'rxjs/operators';
 
+import { LoadingService } from '../loading/loading.service';
 import { Course, sortCoursesBySeqNo } from '../model/course';
 import { CoursesService } from '../services/courses.service';
 
@@ -27,10 +28,13 @@ export class HomeComponent implements OnInit {
 
 	constructor(
 		private coursesService: CoursesService,
+		private loadingService: LoadingService,
 	) {
 	}
 
+	/* Never call this method directly. */
 	ngOnInit() {
+		this.reloadCourses();
 		/*
 		this.courses$ = this.coursesService.loadCourses()
 			.pipe(
@@ -42,10 +46,15 @@ export class HomeComponent implements OnInit {
 			)
 			.subscribe();
 		*/
+	}
+
+	reloadCourses(): void {
+		this.loadingService.loadingOn();
 
 		this.courses$ = this.coursesService.loadCourses()
 			.pipe(
-				map((courses: Course[]) => courses.sort(sortCoursesBySeqNo))
+				map((courses: Course[]) => courses.sort(sortCoursesBySeqNo)),
+				finalize(() => this.loadingService.loadingOff())
 			);
 
 		this.beginnerCourses$ = this.courses$
@@ -54,9 +63,9 @@ export class HomeComponent implements OnInit {
 			);
 
 		this.advancedCourses$ = this.courses$
-		.pipe(
-			map((courses: Course[]) => courses.filter(course => course.category === 'ADVANCED'))
-		);
+			.pipe(
+				map((courses: Course[]) => courses.filter(course => course.category === 'ADVANCED'))
+			);
 	}
 }
 

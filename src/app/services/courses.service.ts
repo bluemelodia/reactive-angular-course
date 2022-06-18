@@ -18,4 +18,18 @@ export class CoursesService {
 				shareReplay()
 			);
   }
+
+  /**
+   * 
+   * @param courseId Uniquely identifies the course.
+   * @param changes Avoids the consumer having to pass an entire
+   * course instance - they can just pass the properties that they
+   * want modified. This also maintains type safety.
+   */
+  saveCourse(courseId: string, changes: Partial<Course>): Observable<any> {
+		return this.http.put(`/api/courses/${courseId}`, changes)
+			.pipe(
+				shareReplay()
+			);
+  }
 }
