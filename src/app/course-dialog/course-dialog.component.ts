@@ -6,13 +6,16 @@ import * as moment from 'moment';
 import { Course } from "../model/course";
 import { CoursesService } from '../services/courses.service';
 import { LoadingService } from '../loading/loading.service';
+import { MessagesService } from '../messages/messages.service';
+import { throwError } from 'rxjs';
 
 @Component({
 	selector: 'course-dialog',
 	templateUrl: './course-dialog.component.html',
 	styleUrls: ['./course-dialog.component.css'],
 	providers: [
-		LoadingService
+		LoadingService,
+		MessagesService,
 	]
 })
 export class CourseDialogComponent implements AfterViewInit {
@@ -25,6 +28,7 @@ export class CourseDialogComponent implements AfterViewInit {
 		private coursesService: CoursesService,
 		private fb: FormBuilder,
 		public loadingService: LoadingService,
+		public messagesService: MessagesService,
 		private dialogRef: MatDialogRef<CourseDialogComponent>,
 		@Inject(MAT_DIALOG_DATA) course: Course) {
 
@@ -47,7 +51,15 @@ export class CourseDialogComponent implements AfterViewInit {
 		/* Contains the latest value for each property. */
 		const changes = this.form.value;
 
-		const saveCourse$ = this.loadingService.showLoaderUntilCompleted(this.coursesService.saveCourse(this.course.id, changes));
+		const saveCourse$ = this.loadingService.showLoaderUntilCompleted(this.coursesService.saveCourse(this.course.id, changes))
+			.pipe(err => {
+				const message = 'Could not save source.';
+				console.log(message, err);
+
+				this.messagesService.showErrors(message);
+
+				return throwError(err);
+			});
 
 		saveCourse$
 			.subscribe((val) => {

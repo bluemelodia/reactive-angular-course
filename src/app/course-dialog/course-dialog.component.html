@@ -1,6 +1,7 @@
 <h2 mat-dialog-title>{{course.description}}</h2>
 
 <loading *ngIf="loadingService.loading$ | async"></loading>
+<messages></messages>
 
 <mat-dialog-content [formGroup]="form">
 
