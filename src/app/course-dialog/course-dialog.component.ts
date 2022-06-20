@@ -4,10 +4,9 @@ import { FormBuilder, Validators, FormGroup } from "@angular/forms";
 import * as moment from 'moment';
 
 import { Course } from "../model/course";
-import { CoursesService } from '../services/courses.service';
 import { LoadingService } from '../loading/loading.service';
 import { MessagesService } from '../messages/messages.service';
-import { throwError } from 'rxjs';
+import { CoursesStore } from '../services/courses.store';
 
 @Component({
 	selector: 'course-dialog',
@@ -25,7 +24,7 @@ export class CourseDialogComponent implements AfterViewInit {
 	course: Course;
 
 	constructor(
-		private coursesService: CoursesService,
+		private coursesStore: CoursesStore,
 		private fb: FormBuilder,
 		public loadingService: LoadingService,
 		public messagesService: MessagesService,
@@ -51,24 +50,14 @@ export class CourseDialogComponent implements AfterViewInit {
 		/* Contains the latest value for each property. */
 		const changes = this.form.value;
 
-		const saveCourse$ = this.loadingService.showLoaderUntilCompleted(this.coursesService.saveCourse(this.course.id, changes))
-			.pipe(err => {
-				const message = 'Could not save source.';
-				console.log(message, err);
+		this.coursesStore.saveCourse(this.course.id, changes)
+			.subscribe();
 
-				this.messagesService.showErrors(message);
-
-				return throwError(err);
-			});
-
-		saveCourse$
-			.subscribe((val) => {
-				/**
-				* Distinguish this call from the call to
-				* close the dialog without making modifications.
-				*/
-				this.dialogRef.close(val);
-			});
+		/**
+		* Distinguish this call from the call to
+		* close the dialog without making modifications.
+		*/
+		this.dialogRef.close(changes);
 	}
 
 	close() {

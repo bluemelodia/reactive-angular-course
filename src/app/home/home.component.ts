@@ -30,7 +30,7 @@ export class HomeComponent implements OnInit {
 		this.reloadCourses();
 	}
 
-	reloadCourses(): void {
+	private reloadCourses(): void {
 		this.beginnerCourses$ = this.coursesStore.filterByCategory('BEGINNER')
 			.pipe(
 				map((courses: Course[]) => courses.filter(course => course.category === 'BEGINNER'))
