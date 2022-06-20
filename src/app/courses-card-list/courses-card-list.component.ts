@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { filter, tap } from 'rxjs/operators';
 
@@ -6,9 +6,10 @@ import { CourseDialogComponent } from '../course-dialog/course-dialog.component'
 import { Course } from '../model/course';
 
 @Component({
-  selector: 'courses-card-list',
-  templateUrl: './courses-card-list.component.html',
-  styleUrls: ['./courses-card-list.component.scss']
+	selector: 'courses-card-list',
+	templateUrl: './courses-card-list.component.html',
+	styleUrls: ['./courses-card-list.component.scss'],
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CoursesCardListComponent implements OnInit {
 	@Input() courses: Course[];
@@ -30,7 +31,7 @@ export class CoursesCardListComponent implements OnInit {
 
 		/* When we open a dialog, we get a reference to it. */
 		const dialogRef = this.dialog.open(CourseDialogComponent, dialogConfig);
-	
+
 		/* Emits on dialog close. The dialog only emits on successful set. */
 		dialogRef.afterClosed()
 			.pipe(

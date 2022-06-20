@@ -10,15 +10,35 @@ import { Lesson } from '../model/lesson';
   providedIn: 'root'
 })
 export class CoursesService {
-  constructor(private http: HttpClient) { }
+  	constructor(private http: HttpClient) { }
 
-  loadCourses(): Observable<Course[]> {
+	loadCourseById(courseId: number): Observable<Course> {
+		return this.http.get<Course>(`/api/courses/${courseId}`)
+			.pipe(
+				shareReplay()
+			);
+	}
+
+	loadAllCourseLessons(courseId: number): Observable<Lesson[]> {
+		return this.http.get<Lesson[]>('/api/lessons', {
+			params: {
+				pageSize: "1000",
+				courseId: courseId.toString()
+			}  
+		})
+	  	.pipe(
+			map(res => res["payload"]),
+			shareReplay()
+		);
+	}
+
+	loadCourses(): Observable<Course[]> {
 		return this.http.get<Course[]>('/api/courses')
 			.pipe(
 				map((res: Course[]) => res["payload"]),
 				shareReplay()
 			);
-  }
+	}
 
   /**
    * 
@@ -27,23 +47,23 @@ export class CoursesService {
    * course instance - they can just pass the properties that they
    * want modified. This also maintains type safety.
    */
-  saveCourse(courseId: string, changes: Partial<Course>): Observable<any> {
+  	saveCourse(courseId: string, changes: Partial<Course>): Observable<any> {
 		return this.http.put(`/api/courses/${courseId}`, changes)
 			.pipe(
 				shareReplay()
 			);
-  }
+  	}
 
-  searchLessons(search: string): Observable<Lesson[]> {
-	  return this.http.get<Lesson[]>('/api/lessons', {
-		params: {
-			filter: search,
-			pageSize: "100"
-		}  
-	  })
+ 	searchLessons(search: string): Observable<Lesson[]> {
+		return this.http.get<Lesson[]>('/api/lessons', {
+			params: {
+				filter: search,
+				pageSize: "100"
+			}  
+		})
 	  	.pipe(
-			  map(res => res["payload"]),
-			  shareReplay()
-		  )
-  }
+			map(res => res["payload"]),
+			shareReplay()
+		);
+  	}
 }

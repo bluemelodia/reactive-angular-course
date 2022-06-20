@@ -1,18 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import { Observable, throwError } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
-import { LoadingService } from '../loading/loading.service';
-import { MessagesService } from '../messages/messages.service';
-import { Course, sortCoursesBySeqNo } from '../model/course';
-import { CoursesService } from '../services/courses.service';
+import { Course } from '../model/course';
 import { CoursesStore } from '../services/courses.store';
 
 
 @Component({
 	selector: 'home',
 	templateUrl: './home.component.html',
-	styleUrls: ['./home.component.css']
+	styleUrls: ['./home.component.css'],
+	changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HomeComponent implements OnInit {
 	private courses$;
